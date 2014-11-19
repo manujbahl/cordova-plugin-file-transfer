@@ -64,6 +64,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.CookieManager;
+import	android.webkit.CookieSyncManager;
 
 public class FileTransfer extends CordovaPlugin {
 
@@ -315,6 +316,9 @@ public class FileTransfer extends CordovaPlugin {
                     conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
 
                     // Set the cookies on the response
+                    // XXXSM : Provide a cookie manager that may be missing for non-webkit webviews.
+                    //         Such a case is with XWalk views.
+                    CookieSyncManager.createInstance(cordova.getActivity());
                     String cookie = CookieManager.getInstance().getCookie(target);
                     if (cookie != null) {
                         conn.setRequestProperty("Cookie", cookie);
