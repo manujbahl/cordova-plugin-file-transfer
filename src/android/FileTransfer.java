@@ -276,7 +276,8 @@ public class FileTransfer extends CordovaPlugin {
         synchronized (activeRequests) {
             activeRequests.put(objectId, context);
         }
-        
+
+
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 if (context.aborted) {
@@ -292,7 +293,12 @@ public class FileTransfer extends CordovaPlugin {
                     FileUploadResult result = new FileUploadResult();
                     FileProgressResult progress = new FileProgressResult();
 
-                    //------------------ CLIENT REQUEST
+                    progress.setLoaded(0);
+                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult.setKeepCallback(true);
+                    context.sendPluginResult(progressResult);
+
+                            //------------------ CLIENT REQUEST
                     // Open a HTTP connection to the URL based on protocol
                     conn = resourceApi.createHttpConnection(targetUri);
                     if (useHttps && trustEveryone) {
@@ -304,6 +310,12 @@ public class FileTransfer extends CordovaPlugin {
                         // Setup the connection not to verify hostnames
                         https.setHostnameVerifier(DO_NOT_VERIFY);
                     }
+
+                       
+                    progress.setLoaded(1);
+                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult.setKeepCallback(true);
+                    context.sendPluginResult(progressResult);
 
                     // Allow Inputs
                     conn.setDoInput(true);
@@ -328,7 +340,11 @@ public class FileTransfer extends CordovaPlugin {
                     if (headers != null) {
                         addHeadersToRequest(conn, headers);
                     }
-
+                       
+                    progress.setLoaded(2);
+                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult.setKeepCallback(true);
+                    context.sendPluginResult(progressResult);
                     /*
                         * Store the non-file portions of the multipart data as a string, so that we can add it
                         * to the contentSize, since it is part of the body of the HTTP request.
@@ -357,7 +373,12 @@ public class FileTransfer extends CordovaPlugin {
                     byte[] beforeDataBytes = beforeData.toString().getBytes("UTF-8");
                     byte[] tailParamsBytes = (LINE_END + LINE_START + BOUNDARY + LINE_START + LINE_END).getBytes("UTF-8");
 
-                    
+                                           
+                    progress.setLoaded(3);
+                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult.setKeepCallback(true);
+                    context.sendPluginResult(progressResult);
+
                     // Get a input stream of the file on the phone
                     OpenForReadResult readResult = resourceApi.openForRead(sourceUri);
                     
@@ -385,6 +406,11 @@ public class FileTransfer extends CordovaPlugin {
 
                     conn.connect();
                     
+                    progress.setLoaded(4);
+                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult.setKeepCallback(true);
+                    context.sendPluginResult(progressResult);
+
                     OutputStream sendStream = null;
                     try {
                         sendStream = conn.getOutputStream();
