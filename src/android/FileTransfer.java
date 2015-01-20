@@ -103,6 +103,16 @@ public class FileTransfer extends CordovaPlugin {
                 }
             }
         }
+        void sendSuccess() {
+          Log.d(LOG_TAG, "MB says ... CHECK 8A");
+            synchronized (this) {
+                if (!aborted) {
+                  Log.d(LOG_TAG, "MB says ... CHECK 9A");
+                    callbackContext.success();
+                    Log.d(LOG_TAG, "MB says ... CHECK 10A");
+                }
+            }
+        }
     }
 
     /**
@@ -313,7 +323,7 @@ public class FileTransfer extends CordovaPlugin {
 
                        
                     progress.setLoaded(1);
-                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
                     progressResult.setKeepCallback(true);
                     context.sendPluginResult(progressResult);
 
@@ -342,7 +352,7 @@ public class FileTransfer extends CordovaPlugin {
                     }
                        
                     progress.setLoaded(2);
-                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
                     progressResult.setKeepCallback(true);
                     context.sendPluginResult(progressResult);
                     /*
@@ -375,7 +385,7 @@ public class FileTransfer extends CordovaPlugin {
 
                                            
                     progress.setLoaded(3);
-                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
                     progressResult.setKeepCallback(true);
                     context.sendPluginResult(progressResult);
 
@@ -407,7 +417,7 @@ public class FileTransfer extends CordovaPlugin {
                     conn.connect();
                     
                     progress.setLoaded(4);
-                    PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+                    progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
                     progressResult.setKeepCallback(true);
                     context.sendPluginResult(progressResult);
 
@@ -506,6 +516,8 @@ public class FileTransfer extends CordovaPlugin {
                     Log.d(LOG_TAG, "MB says ... CHECK 3");
 
                     context.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
+                    context.sendSuccess();
+
                     Log.d(LOG_TAG, "MB says ... CHECK 4");
                 } catch (FileNotFoundException e) {
                     JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, conn, e);
