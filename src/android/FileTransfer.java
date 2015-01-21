@@ -277,11 +277,11 @@ public class FileTransfer extends CordovaPlugin {
             activeRequests.put(objectId, context);
         }*/
         
-        //cordova.getThreadPool().execute(new Runnable() {
-            //public void run() {
-                //if (context.aborted) {
-                  //  return;
-                //}
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                if (context.aborted) {
+                    return;
+                }
                 HttpURLConnection conn = null;
                 HostnameVerifier oldHostnameVerifier = null;
                 SSLSocketFactory oldSocketFactory = null;
@@ -516,9 +516,9 @@ public class FileTransfer extends CordovaPlugin {
                             https.setSSLSocketFactory(oldSocketFactory);
                         }
                     }
-                }                
-            //}
-        //});
+                }         
+            }
+        });
     }
 
     private static void safeClose(Closeable stream) {
