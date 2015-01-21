@@ -418,12 +418,13 @@ public class FileTransfer extends CordovaPlugin {
                             bytesAvailable = readResult.inputStream.available();
                             bufferSize = Math.min(bytesAvailable, MAX_BUFFER_SIZE);
                             bytesRead = readResult.inputStream.read(buffer, 0, bufferSize);
-
+/*
                             // Send a progress event.
                             progress.setLoaded(totalBytes);
                             PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
                             progressResult.setKeepCallback(true);
                             context.sendPluginResult(progressResult);
+                            */
                         }
     
                         // send multipart form data necessary after file data...
@@ -479,9 +480,9 @@ public class FileTransfer extends CordovaPlugin {
                     result.setResponse(responseString);
                     Log.d(LOG_TAG, "MB says ... CHECK 3");
 
-                    callbackContext.success();
+                    //callbackContext.success();
                     Log.d(LOG_TAG, "MB says ... CHECK 3A");
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
+                    context.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
                     
                     Log.d(LOG_TAG, "MB says ... CHECK 4");
                 } catch (FileNotFoundException e) {
