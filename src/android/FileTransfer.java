@@ -277,11 +277,11 @@ public class FileTransfer extends CordovaPlugin {
             activeRequests.put(objectId, context);
         }*/
         
-        cordova.getThreadPool().execute(new Runnable() {
-            public void run() {
-                if (context.aborted) {
-                    return;
-                }
+        //cordova.getThreadPool().execute(new Runnable() {
+            //public void run() {
+                //if (context.aborted) {
+                  //  return;
+                //}
                 HttpURLConnection conn = null;
                 HostnameVerifier oldHostnameVerifier = null;
                 SSLSocketFactory oldSocketFactory = null;
@@ -503,8 +503,8 @@ public class FileTransfer extends CordovaPlugin {
                     synchronized (activeRequests) {
                       Log.d(LOG_TAG, "MB says ... CHECK 5A");
                         activeRequests.remove(objectId);
-                    Log.d(LOG_TAG, "MB says ... CHECK 5B");*/
-                  }
+                    Log.d(LOG_TAG, "MB says ... CHECK 5B");
+                  }*/
 
                     if (conn != null) {
                       Log.d(LOG_TAG, "MB says ... CHECK 6");
@@ -517,8 +517,8 @@ public class FileTransfer extends CordovaPlugin {
                         }
                     }
                 }         
-            }
-        });
+            //}
+        //});
     }
 
     private static void safeClose(Closeable stream) {
