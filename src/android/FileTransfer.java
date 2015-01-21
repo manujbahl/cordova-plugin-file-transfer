@@ -479,8 +479,9 @@ public class FileTransfer extends CordovaPlugin {
                     result.setResponse(responseString);
                     Log.d(LOG_TAG, "MB says ... CHECK 3");
 
-                    context.success();
-                    context.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
+                    callbackContext.success();
+                    Log.d(LOG_TAG, "MB says ... CHECK 3A");
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
                     
                     Log.d(LOG_TAG, "MB says ... CHECK 4");
                 } catch (FileNotFoundException e) {
