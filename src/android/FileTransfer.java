@@ -271,17 +271,17 @@ public class FileTransfer extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
             return;
         }
-/*
+
         final RequestContext context = new RequestContext(source, target, callbackContext);
         synchronized (activeRequests) {
             activeRequests.put(objectId, context);
-        }*/
+        }
         
-        //cordova.getThreadPool().execute(new Runnable() {
-            //public void run() {
-                //if (context.aborted) {
-                  //  return;
-                //}
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                if (context.aborted) {
+                    return;
+                }
                 HttpURLConnection conn = null;
                 HostnameVerifier oldHostnameVerifier = null;
                 SSLSocketFactory oldSocketFactory = null;
@@ -388,12 +388,12 @@ public class FileTransfer extends CordovaPlugin {
                     OutputStream sendStream = null;
                     try {
                         sendStream = conn.getOutputStream();
-                        /*synchronized (context) {
+                        synchronized (context) {
                             if (context.aborted) {
                                 return;
                             }
                             context.connection = conn;
-                        }*/
+                        }
                         //We don't want to change encoding, we just want this to write for all Unicode.
                         sendStream.write(beforeDataBytes);
                         totalBytes += beforeDataBytes.length;
@@ -423,7 +423,7 @@ public class FileTransfer extends CordovaPlugin {
                             progress.setLoaded(totalBytes);
                             PluginResult progressResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
                             progressResult.setKeepCallback(true);
-                            callbackContext.sendPluginResult(progressResult);
+                            context.sendPluginResult(progressResult);
                         }
     
                         // send multipart form data necessary after file data...
@@ -434,9 +434,9 @@ public class FileTransfer extends CordovaPlugin {
                         safeClose(readResult.inputStream);
                         safeClose(sendStream);
                     }
-                    /*synchronized (context) {
+                    synchronized (context) {
                         context.connection = null;
-                    }*/
+                    }
                     Log.d(LOG_TAG, "Sent " + totalBytes + " of " + fixedLength);
 
                     //------------------ read the SERVER RESPONSE
@@ -447,12 +447,12 @@ public class FileTransfer extends CordovaPlugin {
                     TrackingInputStream inStream = null;
                     try {
                         inStream = getInputStream(conn);
-                        /*synchronized (context) {
+                        synchronized (context) {
                             if (context.aborted) {
                                 return;
                             }
                             context.connection = conn;
-                        }*/
+                        }
                         
                         ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(1024, conn.getContentLength()));
                         byte[] buffer = new byte[1024];
@@ -463,9 +463,9 @@ public class FileTransfer extends CordovaPlugin {
                         }
                         responseString = out.toString("UTF-8");
                     } finally {
-                        /*synchronized (context) {
+                        synchronized (context) {
                             context.connection = null;
-                        }*/
+                        }
                         safeClose(inStream);
                     }
                     
@@ -479,32 +479,34 @@ public class FileTransfer extends CordovaPlugin {
                     result.setResponse(responseString);
                     Log.d(LOG_TAG, "MB says ... CHECK 3");
 
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
+                    context.success();
+                    context.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
+                    
                     Log.d(LOG_TAG, "MB says ... CHECK 4");
                 } catch (FileNotFoundException e) {
                     JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, conn, e);
                     Log.e(LOG_TAG, error.toString(), e);
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
+                    context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
                 } catch (IOException e) {
                     JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, e);
                     Log.e(LOG_TAG, error.toString(), e);
                     Log.e(LOG_TAG, "Failed after uploading " + totalBytes + " of " + fixedLength + " bytes.");
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
+                    context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    context.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
                 } catch (Throwable t) {
                     // Shouldn't happen, but will
                     JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, t);
                     Log.e(LOG_TAG, error.toString(), t);
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
-                } finally {/*
+                    context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
+                } finally {
                   Log.d(LOG_TAG, "MB says ... CHECK 5");
                     synchronized (activeRequests) {
                       Log.d(LOG_TAG, "MB says ... CHECK 5A");
                         activeRequests.remove(objectId);
                     Log.d(LOG_TAG, "MB says ... CHECK 5B");
-                  }*/
+                  }
 
                     if (conn != null) {
                       Log.d(LOG_TAG, "MB says ... CHECK 6");
@@ -517,8 +519,8 @@ public class FileTransfer extends CordovaPlugin {
                         }
                     }
                 }         
-            //}
-        //});
+            }
+        });
     }
 
     private static void safeClose(Closeable stream) {
